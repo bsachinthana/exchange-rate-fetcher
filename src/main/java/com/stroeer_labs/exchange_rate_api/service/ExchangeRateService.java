@@ -32,6 +32,13 @@ public class ExchangeRateService {
         this.metricsService = metricsService;
     }
 
+    /**
+     * Fetches exchange rates for the given base currency and symbols.
+     * The method first checks the cache for existing rates. If not found, it fetches rates from two APIs
+     * @param baseCur
+     * @param symbols
+     * @return
+     */
     @Cacheable(
         value = "exchangeRates",
         key = "T(com.stroeer_labs.exchange_rate_api.service.ExchangeRateService).buildCacheKey(#baseCur, #symbols)"
@@ -100,6 +107,12 @@ public class ExchangeRateService {
         return null;
     }
 
+    /**
+     * Fetches exchange rates from the Frankfurter API.
+     * @param baseCur
+     * @param symbols
+     * @return
+     */
     private ExchangeRateResponse fetchFromFrankfurter(String baseCur, String symbols) {
         metricsService.incFrankfurterApiRequest();
         String url = UriComponentsBuilder.fromUriString("https://api.frankfurter.dev/v1/latest")
@@ -119,6 +132,12 @@ public class ExchangeRateService {
         }
     }
 
+    /**
+     * Fetches exchange rates from the Fawaz Ahmed API.
+     * @param baseCur
+     * @param requestedSymbols
+     * @return
+     */
     private ExchangeRateResponse fetchFromFawazAhmetApi(String baseCur, Set<String> requestedSymbols) {
         metricsService.incFawazAhmedApiRequest();
         // FawazAhmed API only support lower case base currency and symbols
